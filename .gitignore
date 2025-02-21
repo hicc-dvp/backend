@@ -1,0 +1,54 @@
+# 로컬 환경 변수 파일 무시
+.env
+.env.local
+.env.production
+.env.development
+application.yml
+
+# 민감한 설정 파일 무시
+*.pem
+*.key
+*.crt
+*.pfx
+*.der
+
+# 빌드 산출물 무시
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE 및 편집기 관련 파일 무시
+.idea/
+*.iml
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Gradle 및 Maven 빌드 디렉토리 무시
+/.gradle/
+/.mvn/
+/target/
+/build/
+/out/
+/bin/
+
+# 운영체제 관련 파일 무시
+.DS_Store
+Thumbs.db
+.fseventsd
+.Trashes
+.VolumeIcon.icns
+$RECYCLE.BIN/
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
+.gradle/file-system.probe
