@@ -76,8 +76,8 @@ public class DiningService {
                         item.get("category").asText(),
                         item.has("address") ? item.get("address").asText() : "",
                         item.has("roadAddress") ? item.get("roadAddress").asText() : "",
-                        item.has("mapx") ? item.get("mapx").asLong() / 1_000_000 : 0, // 좌표 변환
-                        item.has("mapy") ? item.get("mapy").asLong() / 1_000_000 : 0  // 좌표 변환
+                        item.has("mapx") ? item.get("mapx").asLong() : 0, // 좌표 변환
+                        item.has("mapy") ? item.get("mapy").asLong() : 0  // 좌표 변환
                 );
                 diningList.add(dining);
             }
