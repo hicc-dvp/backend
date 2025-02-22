@@ -16,7 +16,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DiningService {
@@ -39,8 +41,8 @@ public class DiningService {
     public List<String> fetchMultipleQueriesFromNaver() {
         List<String> allResults = new ArrayList<>();
         String[] queries = {
-                "홍대 맛집", "홍대 밥집", "홍대 레스토랑", "홍대 술집", "홍대 카페",
-                "홍대 한식 맛집", "홍대 양식 맛집", "홍대 일식 맛집", "홍대 중식 맛집"
+                "홍대 양식", "홍대 중식", "홍대 맛집", "홍대 술집", "홍대 카페",
+                "홍대 한식", "홍대 일식", "홍대 분식", "홍대 고기"
         };
 
         for (String query : queries) {
@@ -76,6 +78,9 @@ public class DiningService {
     public void saveFromJsonList(List<String> jsonList) {
         try {
             List<Dining> diningList = new ArrayList<>();
+            Set<String> existingTitles = new HashSet<>(diningRepository.findAllTitles()); // ✅ DB에서 모든 title 가져오기
+            Set<String> newTitles = new HashSet<>(); // ✅ JSON에서 중복 방지를 위한 Set
+
 
             for (String jsonData : jsonList) {
                 // ✅ JSON 문자열을 JsonNode 객체로 변환
@@ -101,10 +106,22 @@ public class DiningService {
                     continue;
                 }
 
+
                 // ✅ items 배열을 순회하면서 Dining 객체로 변환 후 저장
                 for (JsonNode item : itemsNode) {
+                    String title = item.get("title").asText();
+
+                    // ✅ 중복 확인: DB에 존재하는지 + 현재 리스트에서 중복인지 체크
+                    if (existingTitles.contains(title) || newTitles.contains(title)) {
+                        System.out.println("⚠️ [WARNING] 이미 존재하는 데이터 (중복): " + title);
+                        continue;
+                    }
+
+                    // ✅ Set에 추가 (중복 방지)
+                    newTitles.add(title);
+
                     Dining dining = new Dining(
-                            item.get("title").asText(),
+                            title,
                             item.get("category").asText(),
                             item.has("address") ? item.get("address").asText() : "",
                             item.has("roadAddress") ? item.get("roadAddress").asText() : "",
