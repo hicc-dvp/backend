@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/dining")
@@ -25,7 +26,7 @@ public class DiningController {
 
     // 네이버 API에서 데이터 받아오기
     @GetMapping("/data")
-    public List<String> naver() {
+    public List<Map<String, String>> naver() {
         return diningService.fetchMultipleQueriesFromNaver();
     }
 
@@ -34,7 +35,7 @@ public class DiningController {
     public String saveNaverData() {
         try {
 
-            List<String> jsonData = diningService.fetchMultipleQueriesFromNaver();
+            List<Map<String, String>>  jsonData = diningService.fetchMultipleQueriesFromNaver();
 
             diningService.saveFromJsonList(jsonData);
 

@@ -25,13 +25,16 @@ public class Dining {
     private long mapx;
     private long mapy;
 
+    private String searchQuery;
 
-    public Dining(String title, String category, String address, String roadAddress, long mapx, long mapy) {
+
+    public Dining(String title, String category, String address, String roadAddress, long mapx, long mapy, String searchQuery) {
         this.title = title;
         this.category = category;
         this.address = address;
         this.roadAddress = roadAddress;
         this.mapx = mapx;
         this.mapy = mapy;
+        this.searchQuery = searchQuery;
     }
 }
