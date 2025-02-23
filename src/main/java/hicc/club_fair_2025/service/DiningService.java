@@ -41,8 +41,10 @@ public class DiningService {
     public List<String> fetchMultipleQueriesFromNaver() {
         List<String> allResults = new ArrayList<>();
         String[] queries = {
-                "홍대 양식", "홍대 중식", "홍대 맛집", "홍대 술집", "홍대 카페",
-                "홍대 한식", "홍대 일식", "홍대 분식", "홍대 고기"
+                "홍대 한식 제육", "홍대 한식 국밥", "홍대 한식 백반", "홍대 한식 비빔밥", "홍대 한식 칼국수",
+                "홍대 일식 스시", "홍대 일식 우동", "홍대 일식 덮밥", "홍대 일식 라멘", "홍대 일식 돈가스",
+                "홍대 중식 짬뽕", "홍대 중식 마라탕", "홍대 중식 탄탄면", "홍대 중식 양꼬치", "홍대 중식 딤섬",
+                "홍대 양식 파스타", "홍대 양식 피자", "홍대 양식 햄버거", "홍대 양식 샌드위치", "홍대 양식 스테이크",
         };
 
         for (String query : queries) {
@@ -50,9 +52,9 @@ public class DiningService {
                     .fromUriString("https://openapi.naver.com")
                     .path("/v1/search/local.json")
                     .queryParam("query", query)
-                    .queryParam("display", 5)  // 최대 5개
+                    .queryParam("display", 1)  // 최대 5개
                     .queryParam("start", 1)  // start 값 변경 불가
-                    .queryParam("sort", "comment")  // 리뷰 많은 순 정렬
+                    .queryParam("sort", "random")  // 리뷰 많은 순 정렬
                     .encode(StandardCharsets.UTF_8)
                     .build()
                     .toUri();
