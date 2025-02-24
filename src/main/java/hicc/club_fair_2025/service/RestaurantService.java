@@ -2,9 +2,9 @@ package hicc.club_fair_2025.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hicc.club_fair_2025.domain.Dining;
-import hicc.club_fair_2025.repository.DiningRepository;
-import hicc.club_fair_2025.repository.JpaDiningRepository;
+import hicc.club_fair_2025.entity.Restaurant;
+import hicc.club_fair_2025.repository.RestaurantRepository;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import java.util.*;
 
 @Service
 public class DiningService {
-    private final DiningRepository diningRepository;
+    private final RestaurantRepository diningRepository;
     private final ObjectMapper objectMapper;
 
     @Value("${naver.client-id}")
@@ -30,7 +30,7 @@ public class DiningService {
     private String clientSecret;
 
 
-    public DiningService(DiningRepository diningRepository) {
+    public DiningService(RestaurantRepository diningRepository) {
         this.diningRepository = diningRepository;
         this.objectMapper = new ObjectMapper();
     }
@@ -96,7 +96,7 @@ public class DiningService {
     @Transactional
     public void saveFromJsonList(List<Map<String, String>> jsonList) {
         try {
-            List<Dining> diningList = new ArrayList<>();
+            List<Restaurant> diningList = new ArrayList<>();
             Set<String> existingTitles = new HashSet<>(diningRepository.findAllTitles()); // ✅ DB에서 모든 title 가져오기
             Set<String> newTitles = new HashSet<>(); // ✅ JSON에서 중복 방지를 위한 Set
 
@@ -145,7 +145,7 @@ public class DiningService {
                     // ✅ Set에 추가 (중복 방지)
                     newTitles.add(title);
 
-                    Dining dining = new Dining(
+                    Restaurant dining = new Restaurant(
                             title,
                             item.has("category") ? item.get("category").asText() : "미분류",
                             item.has("address") ? item.get("address").asText() : "",

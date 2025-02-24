@@ -1,16 +1,9 @@
 package hicc.club_fair_2025.controller;
 
-import hicc.club_fair_2025.service.DiningService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import hicc.club_fair_2025.service.RestaurantService;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +11,9 @@ import java.util.Map;
 @RequestMapping("/dining")
 public class DiningController {
 
-    private final DiningService diningService;
+    private final RestaurantService diningService;
 
-    public DiningController(DiningService diningService) {
+    public DiningController(RestaurantService diningService) {
         this.diningService = diningService;
     }
 
