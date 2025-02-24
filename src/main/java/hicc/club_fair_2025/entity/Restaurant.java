@@ -1,10 +1,13 @@
-package hicc.club_fair_2025.domain;
+package hicc.club_fair_2025.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 레스토랑(Entity) - 기본 정보(이름, 카테고리, 주소, 좌표 등)를 저장
+ */
 @Entity
 @Getter
 @Setter
@@ -15,22 +18,20 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;         // 식당명
-    private String category;     // 카테고리
-    private String address;      // 지번 주소
+    private String name;         // 레스토랑 이름
+    private String category;     // 예: 한식, 일식, 중식, 양식 등
     private String roadAddress;  // 도로명 주소
-    private double mapx;         // 경도 (Naver API의 mapx)
-    private double mapy;         // 위도 (Naver API의 mapy)
-    private String link;         // 네이버 지도 링크 등 추가 정보
+    private double mapx;         // 경도
+    private double mapy;         // 위도
 
-    public Restaurant(String name, String category, String address, String roadAddress,
-        double mapx, double mapy, String link) {
+    @Column(unique = true)
+    private String searchQuery;  // 1:1 매핑용 검색어
+
+    public Restaurant(String name, String category, String roadAddress, double mapx, double mapy) {
         this.name = name;
         this.category = category;
-        this.address = address;
         this.roadAddress = roadAddress;
         this.mapx = mapx;
         this.mapy = mapy;
-        this.link = link;
     }
 }
