@@ -14,10 +14,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-/**
- * StationService는 지정된 역(예: "홍대입구역", "상수역")에 대해 네이버 API를 호출하여
- * 역 정보를 파싱하고, Station 엔티티로 DB에 저장하는 기능을 제공합니다.
- */
 @Service
 public class StationService {
 
