@@ -1,5 +1,7 @@
 package hicc.club_fair_2025.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,7 @@ public class SearchQuery {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
+	@JsonIgnore
 	private Category category;  // 상위 카테고리 참조
 
 	public SearchQuery(String query, Category category) {

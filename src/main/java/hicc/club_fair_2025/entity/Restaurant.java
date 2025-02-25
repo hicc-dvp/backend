@@ -21,17 +21,15 @@ public class Restaurant {
     private String name;         // 레스토랑 이름
     private String category;     // 예: 한식, 일식, 중식, 양식 등
     private String roadAddress;  // 도로명 주소
-    private double mapx;         // 경도
-    private double mapy;         // 위도
+    private String link;
 
     @Column(unique = true)
     private String searchQuery;  // 1:1 매핑용 검색어
 
-    public Restaurant(String name, String category, String roadAddress, double mapx, double mapy) {
+    public Restaurant(String name, String category, String roadAddress, String link) {
         this.name = name;
         this.category = category;
         this.roadAddress = roadAddress;
-        this.mapx = mapx;
-        this.mapy = mapy;
+        this.link = link;
     }
 }

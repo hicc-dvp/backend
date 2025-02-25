@@ -1,5 +1,6 @@
 package hicc.club_fair_2025.controller;
 
+import hicc.club_fair_2025.dto.CategoryDto;
 import hicc.club_fair_2025.entity.Category;
 import hicc.club_fair_2025.entity.SearchQuery;
 import hicc.club_fair_2025.service.CategoryService;
@@ -26,10 +27,16 @@ public class CategoryController {
 	/**
 	 * 전체 카테고리 목록 조회
 	 */
-	@Operation(summary = "전체 카테고리 조회", description = "DB에 저장된 모든 카테고리를 반환합니다.")
+	@Operation(summary = "전체 카테고리 조회", description = "DB에 저장된 모든 카테고리를 반환합니다. (id, name만)")
 	@GetMapping
-	public List<Category> getAllCategories() {
-		return categoryService.findAllCategories();
+	public List<CategoryDto> getAllCategories() {
+		// 1) 엔티티 목록 조회
+		List<Category> categories = categoryService.findAllCategories();
+
+		// 2) Category → CategoryDto 변환
+		return categories.stream()
+			.map(cat -> new CategoryDto(cat.getId(), cat.getName()))
+			.toList();
 	}
 
 	/**

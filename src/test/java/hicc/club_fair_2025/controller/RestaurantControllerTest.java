@@ -86,7 +86,7 @@ class RestaurantControllerTest {
 		given(searchQueryRepository.findById(anyLong()))
 			.willReturn(Optional.of(sq));
 
-		var rest = new Restaurant("홍대 제육맛집", "한식", "서울시 어딘가", 0.0, 0.0);
+		var rest = new Restaurant("홍대 제육맛집", "한식", "서울시 어딘가", "https://map.naver.com/v/123456");
 		given(restaurantService.findBySearchQuery("홍대 한식 제육"))
 			.willReturn(rest);
 

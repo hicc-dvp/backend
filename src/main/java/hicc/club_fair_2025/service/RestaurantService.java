@@ -57,25 +57,22 @@ public class RestaurantService {
         List<Restaurant> restaurants = new ArrayList<>();
 
         for (Map<String, String> item : jsonData) {
-            String name = item.get("title");
+            String name = item.get("title"); // <b>홍대 식당</b> 같은 HTML 태그 제거 필요
             String category = item.get("category");
             String roadAddress = item.get("roadAddress");
+            String link = item.get("link");
 
-            double mapx = 0.0;
-            double mapy = 0.0;
-            try {
-                mapx = Double.parseDouble(item.get("mapx"));
-                mapy = Double.parseDouble(item.get("mapy"));
-            } catch (NumberFormatException e) {
-                System.err.println("mapx/mapy 파싱 오류. 기본값 0.0 적용: " + e.getMessage());
-            }
-
-            // HTML 태그 제거 (예: <b>태그</b>)
+            // HTML 태그 제거 (선택)
             if (name != null) {
                 name = name.replaceAll("<[^>]*>", "");
             }
 
-            Restaurant restaurant = new Restaurant(name, category, roadAddress, mapx, mapy);
+            Restaurant restaurant = new Restaurant(
+                name,
+                category,
+                roadAddress,
+                link // link 필드에 저장
+            );
             restaurants.add(restaurant);
         }
 

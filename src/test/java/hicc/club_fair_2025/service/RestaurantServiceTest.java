@@ -33,7 +33,7 @@ class RestaurantServiceTest {
 	@Test
 	void findBySearchQuery() {
 		// given
-		Restaurant mockRest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가", 0.0, 0.0);
+		Restaurant mockRest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가", "https://map.naver.com/v/123456");
 		Mockito.when(restaurantRepository.findBySearchQuery("홍대 한식 제육"))
 			.thenReturn(Optional.of(mockRest));
 
