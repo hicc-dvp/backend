@@ -33,7 +33,7 @@ class RestaurantServiceTest {
 	@Test
 	void findBySearchQuery() {
 		// given
-		Restaurant mockRest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가", "https://map.naver.com/v/123456");
+		Restaurant mockRest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가");
 		Mockito.when(restaurantRepository.findBySearchQuery("홍대 한식 제육"))
 			.thenReturn(Optional.of(mockRest));
 
@@ -64,8 +64,11 @@ class RestaurantServiceTest {
 	void saveFromJsonList() {
 		// given
 		List<Map<String, String>> jsonData = List.of(
-			Map.of("title", "<b>홍대 제육</b>", "category", "한식", "roadAddress", "서울 어딘가",
-				"mapx", "37.1234", "mapy", "126.5678")
+			Map.of(
+				"title", "<b>홍대 제육</b>",
+				"category", "한식",
+				"roadAddress", "서울 어딘가"
+			)
 		);
 
 		// when
@@ -77,52 +80,37 @@ class RestaurantServiceTest {
 			.saveAll(ArgumentMatchers.anyList());
 	}
 
-	@DisplayName("saveFromJsonList() - mapx/mapy 파싱 오류 시 0.0으로 처리")
-	@Test
-	void saveFromJsonList_mapParsingError() {
-		// given
-		List<Map<String, String>> jsonData = List.of(
-			Map.of("title", "홍대 제육", "category", "한식", "roadAddress", "서울 어딘가",
-				"mapx", "abc", "mapy", "xyz")  // 파싱 오류
-		);
-
-		// when
-		restaurantService.saveFromJsonList(jsonData);
-
-		// then
-		// 파싱 오류 발생 -> 0.0으로 대체
-		Mockito.verify(restaurantRepository, Mockito.times(1))
-			.saveAll(ArgumentMatchers.anyList());
-	}
-
 	@DisplayName("saveFromJsonList() - HTML 태그 제거 로직 확인")
 	@Test
 	void saveFromJsonList_htmlTagRemoval() {
 		// given
 		List<Map<String, String>> jsonData = List.of(
-			Map.of("title", "<b>홍대</b> <i>제육</i>", "category", "한식", "roadAddress", "서울",
-				"mapx", "37.1234", "mapy", "126.5678")
+			Map.of(
+				"title", "<b>홍대</b> <i>제육</i>",
+				"category", "한식",
+				"roadAddress", "서울"
+			)
 		);
 
 		// when
 		restaurantService.saveFromJsonList(jsonData);
 
 		// then
-		// 실제로 저장된 Restaurant 엔티티에서 <b>, <i>가 제거되었는지 확인하고 싶다면,
-		// restaurantRepository.saveAll(...)의 인자로 들어간 Restaurant를 캡처하거나 verify(...)
-		// 여기서는 간단히 호출 여부만 체크
+		// 실제로 저장된 Restaurant에서 <b>, <i> 태그가 제거되었는지 검증
 		Mockito.verify(restaurantRepository).saveAll(
 			Mockito.argThat(it -> {
 				// it은 Iterable<Restaurant> 타입
 				if (!(it instanceof List)) {
-					return false; // List가 아니면 false
+					return false;
 				}
 				List<Restaurant> list = (List<Restaurant>) it;
 				if (list.isEmpty()) {
 					return false;
 				}
-				// 여기서부터 list.get(0) 사용 가능
+				// 첫 번째 Restaurant 엔티티 확인
 				Restaurant r = list.get(0);
+
+				// "홍대 제육" 으로 태그가 제거되었는지 검증
 				return "홍대 제육".equals(r.getName());
 			})
 		);

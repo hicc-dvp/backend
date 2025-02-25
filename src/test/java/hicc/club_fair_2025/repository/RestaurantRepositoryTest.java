@@ -23,7 +23,7 @@ class RestaurantRepositoryTest {
 	@Test
 	void findBySearchQuery() {
 		// given
-		Restaurant rest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가", "https://map.naver.com/v/123456");
+		Restaurant rest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가");
 		rest.setSearchQuery("홍대 한식 제육");
 		restaurantRepository.save(rest);
 
@@ -39,11 +39,11 @@ class RestaurantRepositoryTest {
 	@Test
 	void uniqueConstraint() {
 		// given
-		Restaurant rest1 = new Restaurant("홍대 제육1", "한식", "서울 어딘가", "https://map.naver.com/v/123456");
+		Restaurant rest1 = new Restaurant("홍대 제육1", "한식", "서울 어딘가");
 		rest1.setSearchQuery("홍대 한식 제육");
 		restaurantRepository.save(rest1);
 
-		Restaurant rest2 = new Restaurant("홍대 제육2", "한식", "서울 어딘가2", "https://map.naver.com/v/123456");
+		Restaurant rest2 = new Restaurant("홍대 제육2", "한식", "서울 어딘가2");
 		rest2.setSearchQuery("홍대 한식 제육"); // 중복
 
 		// when & then
@@ -57,7 +57,7 @@ class RestaurantRepositoryTest {
 	@Test
 	void saveAndFind() {
 		// given
-		Restaurant rest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가", "https://map.naver.com/v/123456");
+		Restaurant rest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가");
 		rest.setSearchQuery("홍대 한식 제육");
 		Restaurant saved = restaurantRepository.save(rest);
 
