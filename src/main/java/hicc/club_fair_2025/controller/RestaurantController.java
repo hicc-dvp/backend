@@ -1,5 +1,7 @@
 package hicc.club_fair_2025.controller;
 
+import java.util.List;
+
 import hicc.club_fair_2025.entity.Restaurant;
 import hicc.club_fair_2025.entity.SearchQuery;
 import hicc.club_fair_2025.repository.SearchQueryRepository;
@@ -56,10 +58,10 @@ public class RestaurantController {
      */
     @Operation(
         summary = "검색어 ID로 식당 조회",
-        description = "SearchQuery의 PK를 통해 해당 식당 정보를 조회합니다."
+        description = "SearchQuery의 PK를 통해 해당 식당 정보를 모두 조회합니다."
     )
     @GetMapping("/search-queries/{queryId}/restaurant")
-    public Restaurant getRestaurantByQueryId(@PathVariable Long queryId) {
+    public List<Restaurant> getRestaurantByQueryId(@PathVariable Long queryId) {
         SearchQuery sq = searchQueryRepository.findById(queryId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,

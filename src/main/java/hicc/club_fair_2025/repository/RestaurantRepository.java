@@ -4,6 +4,7 @@ import hicc.club_fair_2025.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,5 +16,5 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     /**
      * 주어진 searchQuery 값으로 Restaurant를 조회합니다.
      */
-    Optional<Restaurant> findBySearchQuery(String searchQuery);
+    List<Restaurant> findBySearchQuery(String searchQuery);
 }

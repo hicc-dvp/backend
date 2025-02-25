@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.*;
@@ -48,7 +49,6 @@ class RestaurantControllerTest {
 	@Test
 	void saveOneRestaurantPerSearchQuery_Success() throws Exception {
 		// given: 서비스 메서드 호출 시 예외 발생 없이 정상 수행
-		// 여기서는 아무런 리턴값이 없으므로 doNothing 사용
 		doNothing().when(restaurantService).saveOneRestaurantPerSearchQuery();
 
 		// when & then: POST 요청 후 "저장 완료" 문자열 반환 확인
@@ -75,27 +75,27 @@ class RestaurantControllerTest {
 		// given: SearchQuery와 매핑된 Restaurant 정보 설정
 		SearchQuery sq = new SearchQuery("홍대 한식 제육", null);
 		sq.setId(100L);
-
 		given(searchQueryRepository.findById(anyLong()))
 			.willReturn(Optional.of(sq));
 
 		Restaurant rest = new Restaurant("홍대 제육맛집", "한식", "서울시 어딘가");
 		// Restaurant 엔티티의 searchQuery 필드는 "홍대 한식 제육"로 저장되어 있어야 함
 		rest.setSearchQuery("홍대 한식 제육");
+		List<Restaurant> restList = List.of(rest);
 		given(restaurantService.findBySearchQuery("홍대 한식 제육"))
-			.willReturn(rest);
+			.willReturn(restList);
 
-		// when & then: GET 요청 후 JSON 응답 필드 값 검증
+		// when & then: GET 요청 후 JSON 배열의 첫 번째 요소의 필드 값 검증
 		mockMvc.perform(get("/restaurants/search-queries/100/restaurant"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.name").value("홍대 제육맛집"))
-			.andExpect(jsonPath("$.category").value("한식"));
+			.andExpect(jsonPath("$[0].name").value("홍대 제육맛집"))
+			.andExpect(jsonPath("$[0].category").value("한식"));
 	}
 
 	@DisplayName("GET /restaurants/search-queries/{queryId}/restaurant - 검색어 ID 없음")
 	@Test
 	void getRestaurantByQueryId_NotFound() throws Exception {
-		// given: 존재하지 않는 SearchQuery ID로 조회 시 Optional.empty 반환
+		// given: 존재하지 않는 SearchQuery ID 조회 시 Optional.empty 반환
 		given(searchQueryRepository.findById(999L))
 			.willReturn(Optional.empty());
 
