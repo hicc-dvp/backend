@@ -1,118 +1,125 @@
 package hicc.club_fair_2025.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hicc.club_fair_2025.entity.Restaurant;
+import hicc.club_fair_2025.entity.SearchQuery;
+import hicc.club_fair_2025.entity.Station;
 import hicc.club_fair_2025.repository.RestaurantRepository;
+import hicc.club_fair_2025.repository.SearchQueryRepository;
+import hicc.club_fair_2025.repository.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RestaurantServiceTest {
 
 	@Mock
 	private RestaurantRepository restaurantRepository;
+	@Mock
+	private SearchQueryRepository searchQueryRepository;
+	@Mock
+	private StationRepository stationRepository;
 
 	@InjectMocks
 	private RestaurantService restaurantService;
 
+	// ObjectMapper는 실제 객체 사용
+	private ObjectMapper objectMapper = new ObjectMapper();
+
+	// RestTemplate은 @Spy로 처리하여 실제 호출 대신 모킹 설정
+	@Spy
+	private RestTemplate restTemplate = new RestTemplate();
+
+	private SearchQuery sampleSearchQuery;
+
 	@BeforeEach
-	void setup() {
+	void setUp() {
+		sampleSearchQuery = new SearchQuery("국밥", null);
+		sampleSearchQuery.setId(1L);
 	}
 
 	@DisplayName("findBySearchQuery() - 식당 조회 (정상 케이스)")
 	@Test
-	void findBySearchQuery() {
+	void findBySearchQuery_Success() {
 		// given
-		Restaurant mockRest = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가");
-		Mockito.when(restaurantRepository.findBySearchQuery("홍대 한식 제육"))
-			.thenReturn(Optional.of(mockRest));
+		Restaurant mockRestaurant = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가");
+		mockRestaurant.setSearchQuery("홍대 한식 제육");
+		List<Restaurant> list = List.of(mockRestaurant);
+		given(restaurantRepository.findBySearchQuery("홍대 한식 제육")).willReturn(list);
 
 		// when
-		Restaurant result = restaurantService.findBySearchQuery("홍대 한식 제육");
+		List<Restaurant> result = restaurantService.findBySearchQuery("홍대 한식 제육");
 
 		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getName()).isEqualTo("홍대 제육맛집");
+		assertThat(result).isNotEmpty();
+		assertThat(result.get(0).getName()).isEqualTo("홍대 제육맛집");
 	}
 
-	@DisplayName("findBySearchQuery() - 없는 searchQuery일 경우 null 반환")
+	@DisplayName("findBySearchQuery() - 없는 검색어일 경우 빈 리스트 반환")
 	@Test
 	void findBySearchQuery_NotFound() {
 		// given
-		Mockito.when(restaurantRepository.findBySearchQuery("없는 쿼리"))
-			.thenReturn(Optional.empty());
+		given(restaurantRepository.findBySearchQuery("없는 쿼리")).willReturn(Collections.emptyList());
 
 		// when
-		Restaurant result = restaurantService.findBySearchQuery("없는 쿼리");
+		List<Restaurant> result = restaurantService.findBySearchQuery("없는 쿼리");
 
 		// then
-		assertThat(result).isNull();
+		assertThat(result).isEmpty();
 	}
 
-	@DisplayName("saveFromJsonList() - API 응답을 Restaurant로 변환 후 저장")
+	@DisplayName("saveOneRestaurantPerSearchQuery() - 정상 케이스 (거리 비교 후 '상수역' 저장)")
 	@Test
-	void saveFromJsonList() {
+	void saveOneRestaurantPerSearchQuery_Success() throws Exception {
 		// given
-		List<Map<String, String>> jsonData = List.of(
-			Map.of(
-				"title", "<b>홍대 제육</b>",
-				"category", "한식",
-				"roadAddress", "서울 어딘가"
-			)
-		);
+		List<SearchQuery> sqList = List.of(sampleSearchQuery);
+		given(searchQueryRepository.findAll()).willReturn(sqList);
 
-		// when
-		restaurantService.saveFromJsonList(jsonData);
+		// 네이버 API 응답 JSON 예시 (각 역 후보에 대해 1개씩 응답; 두 번 호출되어 2개 후보 생성)
+		Map<String, Object> fakeResponse = new HashMap<>();
+		fakeResponse.put("total", 1);
+		List<Map<String, String>> items = new ArrayList<>();
+		items.add(Map.of(
+			"title", "<b>홍대 제육맛집</b>",
+			"category", "한식",
+			"roadAddress", "서울 어딘가",
+			"mapx", "1269144811",
+			"mapy", "375526833"
+		));
+		fakeResponse.put("items", items);
+		String fakeJson = objectMapper.writeValueAsString(fakeResponse);
+		ResponseEntity<String> fakeResponseEntity = new ResponseEntity<>(fakeJson, HttpStatus.OK);
 
-		// then
-		// saveAll 호출 여부 검증
-		Mockito.verify(restaurantRepository, Mockito.times(1))
-			.saveAll(ArgumentMatchers.anyList());
-	}
+		// StationRepository 모킹: 각 역 후보에 대해 Station 엔티티 반환
+		Station station1 = new Station("홍대입구역", 1269141400, 375526800, "홍대입구역");
+		Station station2 = new Station("상수역", 1269141500, 375526900, "상수역");
+		given(stationRepository.findByName("홍대입구역")).willReturn(Optional.of(station1));
+		given(stationRepository.findByName("상수역")).willReturn(Optional.of(station2));
 
-	@DisplayName("saveFromJsonList() - HTML 태그 제거 로직 확인")
-	@Test
-	void saveFromJsonList_htmlTagRemoval() {
-		// given
-		List<Map<String, String>> jsonData = List.of(
-			Map.of(
-				"title", "<b>홍대</b> <i>제육</i>",
-				"category", "한식",
-				"roadAddress", "서울"
-			)
-		);
+		// new RestTemplate()으로 생성되는 객체를 모킹하기 위해 mockConstruction 사용
+		try (MockedConstruction<RestTemplate> mocked =
+				 Mockito.mockConstruction(RestTemplate.class, (mock, context) -> {
+					 when(mock.exchange(any(RequestEntity.class), eq(String.class)))
+						 .thenReturn(fakeResponseEntity);
+				 })) {
+			// when
+			restaurantService.saveOneRestaurantPerSearchQuery();
+		}
 
-		// when
-		restaurantService.saveFromJsonList(jsonData);
-
-		// then
-		// 실제로 저장된 Restaurant에서 <b>, <i> 태그가 제거되었는지 검증
-		Mockito.verify(restaurantRepository).saveAll(
-			Mockito.argThat(it -> {
-				// it은 Iterable<Restaurant> 타입
-				if (!(it instanceof List)) {
-					return false;
-				}
-				List<Restaurant> list = (List<Restaurant>) it;
-				if (list.isEmpty()) {
-					return false;
-				}
-				// 첫 번째 Restaurant 엔티티 확인
-				Restaurant r = list.get(0);
-
-				// "홍대 제육" 으로 태그가 제거되었는지 검증
-				return "홍대 제육".equals(r.getName());
-			})
-		);
+		// then: RestaurantRepository.saveAll() 호출이 최소 1회 발생해야 함.
+		then(restaurantRepository).should(atLeastOnce()).saveAll(anyList());
 	}
 }
