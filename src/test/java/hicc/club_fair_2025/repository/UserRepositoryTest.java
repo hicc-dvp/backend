@@ -20,14 +20,9 @@ class UserRepositoryTest {
 	@DisplayName("사용자 저장 및 조회 테스트")
 	@Test
 	void testSaveAndFind() {
-		// given
 		User user = new User("insta123", "상수역", "제육");
 		userRepository.save(user);
-
-		// when
 		Optional<User> found = userRepository.findById(user.getId());
-
-		// then
 		assertThat(found).isPresent();
 		assertThat(found.get().getInstagramId()).isEqualTo("insta123");
 		assertThat(found.get().getStation()).isEqualTo("상수역");
@@ -37,14 +32,9 @@ class UserRepositoryTest {
 	@DisplayName("중복 InstagramId 저장 시 예외 발생 테스트")
 	@Test
 	void testDuplicateInstagramId() {
-		// given
 		User user1 = new User("insta123", "상수역", "제육");
 		User user2 = new User("insta123", "홍대입구역", "백반");
 		userRepository.save(user1);
-
-		// when & then
-		assertThrows(Exception.class, () -> {
-			userRepository.saveAndFlush(user2);
-		});
+		assertThrows(Exception.class, () -> userRepository.saveAndFlush(user2));
 	}
 }

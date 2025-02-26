@@ -1,18 +1,18 @@
-# 로컬 환경 변수 파일 무시
+# 환경 변수 파일
 .env
 .env.local
 .env.production
 .env.development
 application.yml
 
-# 민감한 설정 파일 무시
+# 민감한 설정 파일
 *.pem
 *.key
 *.crt
 *.pfx
 *.der
 
-# 빌드 산출물 무시
+# 빌드 산출물
 *.class
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
@@ -23,14 +23,14 @@ application.yml
 *.tar.gz
 *.rar
 
-# IDE 및 편집기 관련 파일 무시
+# IDE 및 편집기 파일
 .idea/
 *.iml
 .vscode/
 *.sublime-workspace
 *.sublime-project
 
-# Gradle 및 Maven 빌드 디렉토리 무시
+# Gradle 및 Maven 빌드 디렉토리
 /.gradle/
 /.mvn/
 /target/
@@ -38,7 +38,7 @@ application.yml
 /out/
 /bin/
 
-# 운영체제 관련 파일 무시
+# 운영체제 관련 파일
 .DS_Store
 Thumbs.db
 .fseventsd
@@ -46,7 +46,7 @@ Thumbs.db
 .VolumeIcon.icns
 $RECYCLE.BIN/
 
-# Virtual machine crash logs
+# VM 크래시 로그
 hs_err_pid*
 replay_pid*
 
