@@ -117,7 +117,7 @@ public class RestaurantService {
                         Restaurant candidate = new Restaurant(restaurantName, restaurantCategory, roadAddress);
                         candidate.setMapx(mapx);
                         candidate.setMapy(mapy);
-                        candidate.setSearchQuery(stationPrefix + " " + sq.getQuery());
+                        candidate.setSearchQuery(sq.getQuery());
                         candidate.setStation(stationPrefix);
 
                         // 만약 동일한 이름의 후보가 이미 존재한다면, 기존 것을 유지(또는 필요한 경우 추가 로직으로 비교 후 결정)
