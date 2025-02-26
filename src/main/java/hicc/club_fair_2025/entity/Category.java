@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 대분류 카테고리(Entity) - 예: 한식, 일식, 중식, 양식 등
+ * 대분류 카테고리 Entity
  */
 @Entity
 @Getter
@@ -22,12 +22,8 @@ public class Category {
 	private Long id;
 
 	@Column(nullable = false, unique = true)
-	private String name;  // 카테고리명
+	private String name;
 
-	/**
-	 * 해당 카테고리에 속한 상세 검색어 목록
-	 * 예: "홍대 한식 제육", "홍대 한식 국밥" 등
-	 */
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SearchQuery> searchQueries = new ArrayList<>();
 

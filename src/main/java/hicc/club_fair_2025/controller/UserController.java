@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
-/**
- * UserController - 사용자 관련 API 엔드포인트를 제공합니다.
- */
 @Tag(name = "User", description = "사용자 관련 API")
 @RestController
 @RequestMapping("/users")
@@ -29,12 +26,10 @@ public class UserController {
 		return userRepository.save(user);
 	}
 
-	@Operation(
-		summary = "특정 검색어와 역에 따른 사용자 조회",
-		description = "주어진 searchQuery와 station에 해당하는 모든 사용자 정보를 반환합니다."
-	)
+	@Operation(summary = "검색어와 역으로 사용자 조회", description = "searchQuery와 station 조건에 맞는 사용자 정보를 조회합니다.")
 	@GetMapping
-	public List<User> getUsersBySearchQueryAndStation(@RequestParam String searchQuery, @RequestParam String station) {
+	public List<User> getUsersBySearchQueryAndStation(@RequestParam String searchQuery,
+		@RequestParam String station) {
 		List<User> users = userRepository.findBySearchQueryAndStation(searchQuery, station);
 		if (users.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "조건에 해당하는 사용자를 찾을 수 없습니다.");

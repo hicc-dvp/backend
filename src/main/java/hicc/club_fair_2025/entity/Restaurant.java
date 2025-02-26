@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Restaurant 엔티티 - 식당의 기본 정보와 위치, 그리고 분류된 역 정보를 저장합니다.
+ * 식당 Entity
  */
 @Entity
 @Getter
@@ -18,18 +18,16 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;         // 식당 이름
-    private String category;     // 예: 한식, 일식, 중식, 양식 등
-    private String roadAddress;  // 도로명 주소
+    private String name;
+    private String category;
+    private String roadAddress;
 
     @Column(unique = true)
-    private String searchQuery;  // 1:1 매핑용 검색어
+    private String searchQuery;
 
-    // 네이버 API 응답 좌표 (mapx, mapy)
     private double mapx;
     private double mapy;
 
-    // 분류된 역 정보 (예: "홍대입구역", "상수역")
     private String station;
 
     public Restaurant(String name, String category, String roadAddress) {
