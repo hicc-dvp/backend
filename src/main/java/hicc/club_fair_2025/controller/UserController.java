@@ -26,7 +26,7 @@ public class UserController {
 		return userRepository.save(user);
 	}
 
-	@Operation(summary = "검색어와 역으로 사용자 조회", description = "searchQuery와 station 조건에 맞는 사용자 정보를 조회합니다.")
+	@Operation(summary = "메뉴와 역으로 사용자 조회", description = "searchQuery와 station 조건에 맞는 사용자 정보를 조회합니다.")
 	@GetMapping
 	public List<User> getUsersBySearchQueryAndStation(@RequestParam String searchQuery,
 		@RequestParam String station) {
