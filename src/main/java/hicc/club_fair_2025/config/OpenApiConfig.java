@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * OpenAPI 전역 설정 (springdoc 2.3.0 + Spring Boot 3.4.3)
+ * API 문서 자동 생성 설정
  */
 @OpenAPIDefinition(
 	info = @Info(

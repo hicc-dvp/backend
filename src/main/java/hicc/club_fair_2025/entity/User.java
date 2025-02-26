@@ -6,30 +6,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 역(Station) Entity
+ * 사용자 Entity
  */
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Station {
+public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(unique = true, nullable = false)
-	private String name;
+	@Column(nullable = false, unique = true)
+	private String instagramId;
 
-	private long mapx;
-	private long mapy;
-
+	private String station;
 	private String searchQuery;
 
-	public Station(String name, long mapx, long mapy, String searchQuery) {
-		this.name = name;
-		this.mapx = mapx;
-		this.mapy = mapy;
+	public User(String instagramId, String station, String searchQuery) {
+		this.instagramId = instagramId;
+		this.station = station;
 		this.searchQuery = searchQuery;
 	}
 }

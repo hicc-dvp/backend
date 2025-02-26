@@ -23,11 +23,8 @@ class StationControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		// StationService 모킹
 		stationService = Mockito.mock(StationService.class);
-		// Controller 생성
 		stationController = new StationController(stationService);
-		// MockMvc 설정 (UTF-8 인코딩 필터 추가)
 		mockMvc = MockMvcBuilders.standaloneSetup(stationController)
 			.addFilters(new CharacterEncodingFilter("UTF-8", true))
 			.defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
@@ -37,10 +34,7 @@ class StationControllerTest {
 	@DisplayName("POST /stations/save - 역 데이터 저장 (정상)")
 	@Test
 	void saveStationData_Success() throws Exception {
-		// given: stationService.saveStations()가 예외 없이 정상 수행됨
 		doNothing().when(stationService).saveStations(any(String[].class), anyInt());
-
-		// when & then: POST 요청 시 "저장 완료" 메시지 반환
 		mockMvc.perform(post("/stations/save"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("저장 완료"));
@@ -49,11 +43,7 @@ class StationControllerTest {
 	@DisplayName("POST /stations/save - 역 데이터 저장 (실패)")
 	@Test
 	void saveStationData_Failure() throws Exception {
-		// given: stationService.saveStations() 호출 시 예외 발생
-		doThrow(new RuntimeException("API 호출 오류")).when(stationService)
-			.saveStations(any(String[].class), anyInt());
-
-		// when & then: POST 요청 시 오류 메시지 반환 ("저장 실패: API 호출 오류")
+		doThrow(new RuntimeException("API 호출 오류")).when(stationService).saveStations(any(String[].class), anyInt());
 		mockMvc.perform(post("/stations/save"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("저장 실패: API 호출 오류"));
