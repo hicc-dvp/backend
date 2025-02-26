@@ -12,13 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web
+    .util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RestaurantService {
@@ -53,7 +52,8 @@ public class RestaurantService {
         String[] stationPrefixes = {"홍대입구역", "상수역"};
 
         for (SearchQuery sq : searchQueries) {
-            List<Restaurant> candidateList = new ArrayList<>();
+            // 후보 중복 제거를 위해 이름을 키로 사용하는 Map 생성 (순서 유지)
+            Map<String, Restaurant> candidateMap = new LinkedHashMap<>();
             for (String stationPrefix : stationPrefixes) {
                 try {
                     String categoryName = (sq.getCategory() != null) ? sq.getCategory().getName() : "";
@@ -119,7 +119,9 @@ public class RestaurantService {
                         candidate.setMapy(mapy);
                         candidate.setSearchQuery(stationPrefix + " " + sq.getQuery());
                         candidate.setStation(stationPrefix);
-                        candidateList.add(candidate);
+
+                        // 만약 동일한 이름의 후보가 이미 존재한다면, 기존 것을 유지(또는 필요한 경우 추가 로직으로 비교 후 결정)
+                        candidateMap.putIfAbsent(restaurantName, candidate);
                     } else {
                         System.out.println("Empty result for " + sq.getQuery() + " with prefix " + stationPrefix);
                     }
@@ -134,7 +136,8 @@ public class RestaurantService {
                 }
             }
 
-            for (Restaurant candidate : candidateList) {
+            // 각 후보에 대해 두 역과의 거리 비교 후 station 값 업데이트
+            for (Restaurant candidate : candidateMap.values()) {
                 Station station1 = stationRepository.findByName("홍대입구역")
                     .orElseGet(() -> new Station("홍대입구역", 1269240000, 375550000, "홍대입구역"));
                 Station station2 = stationRepository.findByName("상수역")
@@ -151,11 +154,22 @@ public class RestaurantService {
                 }
             }
 
-            if (!candidateList.isEmpty()) {
-                restaurantRepository.saveAll(candidateList);
-                System.out.println(candidateList.size() + " restaurants saved for query: " + sq.getQuery());
+            // DB에 이미 동일한 식당 이름이 존재하는지 체크 후, 새로운 후보만 저장
+            List<Restaurant> existingRestaurants = restaurantRepository.findAll();
+            List<Restaurant> finalCandidates = new ArrayList<>();
+            for (Restaurant candidate : candidateMap.values()) {
+                boolean exists = existingRestaurants.stream()
+                    .anyMatch(r -> r.getName().equals(candidate.getName()));
+                if (!exists) {
+                    finalCandidates.add(candidate);
+                }
+            }
+
+            if (!finalCandidates.isEmpty()) {
+                restaurantRepository.saveAll(finalCandidates);
+                System.out.println(finalCandidates.size() + " restaurants saved for query: " + sq.getQuery());
             } else {
-                System.out.println("No candidates for query: " + sq.getQuery());
+                System.out.println("No new candidates for query: " + sq.getQuery());
             }
         }
     }
