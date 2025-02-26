@@ -9,6 +9,7 @@ import lombok.Setter;
  * User 엔티티 - 사용자가 선택한 Instagram ID, Station, SearchQuery 정보를 저장합니다.
  */
 @Entity
+@Table(name = "users")  // 'user'는 예약어이므로 'users'로 지정
 @Getter
 @Setter
 @NoArgsConstructor
