@@ -27,10 +27,11 @@ public class RestaurantController {
     }
 
     @Operation(summary = "네이버 API 데이터 저장", description = "각 SearchQuery마다 네이버 API를 호출하여 첫 번째 식당 정보를 저장합니다.")
-    @PostMapping(value = "/saveOne", produces = "text/plain;charset=UTF-8")
-    public String saveOneRestaurantPerSearchQuery() {
+    @PostMapping(value = "/save", produces = "text/plain;charset=UTF-8")
+    public String saveRestaurantPerSearchQuery() {
+        int displayCount = 5;
         try {
-            restaurantService.saveOneRestaurantPerSearchQuery();
+            restaurantService.saveRestaurantPerSearchQuery(displayCount);
             return "저장 완료";
         } catch (Exception e) {
             e.printStackTrace();

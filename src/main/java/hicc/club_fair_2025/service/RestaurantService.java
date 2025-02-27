@@ -46,7 +46,7 @@ public class RestaurantService {
         return restaurantRepository.findBySearchQuery(query);
     }
 
-    public void saveOneRestaurantPerSearchQuery() {
+    public void saveRestaurantPerSearchQuery(int displayCount) {
         RestTemplate restTemplate = new RestTemplate();
         List<SearchQuery> searchQueries = searchQueryRepository.findAll();
         String[] stationPrefixes = {"홍대입구역", "상수역"};
@@ -63,7 +63,7 @@ public class RestaurantService {
                     URI uri = UriComponentsBuilder.fromUriString("https://openapi.naver.com")
                         .path("/v1/search/local.json")
                         .queryParam("query", finalQuery)
-                        .queryParam("display", 1)
+                        .queryParam("display", displayCount)
                         .queryParam("start", 1)
                         .build()
                         .encode(StandardCharsets.UTF_8)
@@ -94,34 +94,35 @@ public class RestaurantService {
                     );
 
                     if (items != null && !items.isEmpty()) {
-                        Map<String, String> item = items.get(0);
-                        String restaurantName = item.get("title");
-                        if (restaurantName != null) {
-                            restaurantName = restaurantName.replaceAll("<[^>]*>", "");
-                        }
-                        String restaurantCategory = item.get("category");
-                        String roadAddress = item.get("roadAddress");
+                        for (Map<String, String> item : items) {
+                            String restaurantName = item.get("title");
+                            if (restaurantName != null) {
+                                restaurantName = restaurantName.replaceAll("<[^>]*>", "");
+                            }
+                            String restaurantCategory = item.get("category");
+                            String roadAddress = item.get("roadAddress");
 
-                        double mapx = 0, mapy = 0;
-                        try {
-                            mapx = Double.parseDouble(item.get("mapx"));
-                        } catch (Exception ex) {
-                            System.err.println("mapx error: " + ex.getMessage());
-                        }
-                        try {
-                            mapy = Double.parseDouble(item.get("mapy"));
-                        } catch (Exception ex) {
-                            System.err.println("mapy error: " + ex.getMessage());
-                        }
+                            double mapx = 0, mapy = 0;
+                            try {
+                                mapx = Double.parseDouble(item.get("mapx"));
+                            } catch (Exception ex) {
+                                System.err.println("mapx error: " + ex.getMessage());
+                            }
+                            try {
+                                mapy = Double.parseDouble(item.get("mapy"));
+                            } catch (Exception ex) {
+                                System.err.println("mapy error: " + ex.getMessage());
+                            }
 
-                        Restaurant candidate = new Restaurant(restaurantName, restaurantCategory, roadAddress);
-                        candidate.setMapx(mapx);
-                        candidate.setMapy(mapy);
-                        candidate.setSearchQuery(sq.getQuery());
-                        candidate.setStation(stationPrefix);
+                            Restaurant candidate = new Restaurant(restaurantName, restaurantCategory, roadAddress);
+                            candidate.setMapx(mapx);
+                            candidate.setMapy(mapy);
+                            candidate.setSearchQuery(sq.getQuery());
+                            candidate.setStation(stationPrefix);
 
-                        // 만약 동일한 이름의 후보가 이미 존재한다면, 기존 것을 유지(또는 필요한 경우 추가 로직으로 비교 후 결정)
-                        candidateMap.putIfAbsent(restaurantName, candidate);
+                            // 만약 동일한 이름의 후보가 이미 존재한다면, 기존 것을 유지(또는 필요한 경우 추가 로직으로 비교 후 결정)
+                            candidateMap.putIfAbsent(restaurantName, candidate);
+                        }
                     } else {
                         System.out.println("Empty result for " + sq.getQuery() + " with prefix " + stationPrefix);
                     }
@@ -130,7 +131,7 @@ public class RestaurantService {
                     System.err.println("API error for " + sq.getQuery() + " with prefix " + stationPrefix + ": " + e.getMessage());
                 }
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(200);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }
