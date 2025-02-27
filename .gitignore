@@ -52,3 +52,14 @@ replay_pid*
 
 .gradle/buildOutputCleanup/buildOutputCleanup.lock
 .gradle/file-system.probe
+
+
+# Python (Django) 관련
+crawling/__pycache__/
+crawling/*.pyc
+crawling/*.pyo
+crawling/db.sqlite3
+crawling/env/
+crawling/venv/
+crawling/myenv/
+crawling/.env
