@@ -22,13 +22,15 @@ public class Restaurant {
     private String category;
     private String roadAddress;
 
-    @Column(unique = true)
     private String searchQuery;
 
     private double mapx;
     private double mapy;
+    private String map_url;
 
     private String station;
+
+
 
     public Restaurant(String name, String category, String roadAddress) {
         this.name = name;
