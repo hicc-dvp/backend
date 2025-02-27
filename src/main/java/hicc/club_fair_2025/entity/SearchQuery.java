@@ -19,7 +19,7 @@ public class SearchQuery {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = true)
 	private String query;
 
 	@ManyToOne(fetch = FetchType.LAZY)
