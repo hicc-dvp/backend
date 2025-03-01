@@ -1,7 +1,9 @@
 package hicc.club_fair_2025.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hicc.club_fair_2025.entity.Restaurant;
 import hicc.club_fair_2025.entity.User;
+import hicc.club_fair_2025.repository.RestaurantRepository;
 import hicc.club_fair_2025.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,12 +28,13 @@ class UserControllerTest {
 	private MockMvc mockMvc;
 	private UserRepository userRepository;
 	private UserController userController;
+	private RestaurantRepository restaurantRepository;
 	private ObjectMapper objectMapper;
 
 	@BeforeEach
 	void setUp() {
 		userRepository = Mockito.mock(UserRepository.class);
-		userController = new UserController(userRepository);
+		userController = new UserController(userRepository, restaurantRepository);
 		objectMapper = new ObjectMapper();
 		mockMvc = MockMvcBuilders.standaloneSetup(userController)
 			.addFilters(new CharacterEncodingFilter("UTF-8", true))
@@ -42,7 +45,10 @@ class UserControllerTest {
 	@DisplayName("사용자 등록 API 테스트")
 	@Test
 	void createUser_Success() throws Exception {
-		User user = new User("insta123", "상수역", "제육");
+		Long restaurantId = 1L;
+		Restaurant restaurant = new Restaurant("제순식당", "한식", "서울시 어딘가");
+		restaurant.setId(restaurantId);
+		User user = new User("insta123", "안녕하세요", restaurant);
 		user.setId(1L);
 		when(userRepository.save(any(User.class))).thenReturn(user);
 		mockMvc.perform(post("/users")
@@ -51,23 +57,22 @@ class UserControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value(1L))
 			.andExpect(jsonPath("$.instagramId").value("insta123"))
-			.andExpect(jsonPath("$.station").value("상수역"))
-			.andExpect(jsonPath("$.searchQuery").value("제육"));
+			.andExpect(jsonPath("$.restaurant.id").value(1L));
 	}
 
 	@DisplayName("특정 검색어 및 역에 따른 사용자 조회 API 테스트")
 	@Test
-	void getUsersBySearchQueryAndStation_Success() throws Exception {
-		User user = new User("insta123", "상수역", "제육");
+	void getUsersByRestaurant_Success() throws Exception {
+		Long restaurantId = 1L;
+		Restaurant restaurant = new Restaurant("제순식당", "한식", "서울시 어딘가");
+		restaurant.setId(restaurantId);
+		User user = new User("insta123", "안녕하세요", restaurant);
 		user.setId(1L);
-		when(userRepository.findBySearchQueryAndStation("제육", "상수역")).thenReturn(List.of(user));
-		mockMvc.perform(get("/users")
-				.param("searchQuery", "제육")
-				.param("station", "상수역"))
+		when(userRepository.findByRestaurant_Id(restaurantId)).thenReturn(List.of(user));
+		mockMvc.perform(get("/users/1"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].id").value(1L))
 			.andExpect(jsonPath("$[0].instagramId").value("insta123"))
-			.andExpect(jsonPath("$[0].station").value("상수역"))
-			.andExpect(jsonPath("$[0].searchQuery").value("제육"));
+				.andExpect(jsonPath("$[0].restaurant.id").value(1L));
 	}
 }

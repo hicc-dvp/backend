@@ -29,7 +29,7 @@ class RestaurantRepositoryTest {
 		rest.setStation("홍대입구역");
 		restaurantRepository.save(rest);
 
-		List<Restaurant> found = restaurantRepository.findBySearchQuery("홍대 한식 제육");
+		List<Restaurant> found = restaurantRepository.findBySearchQueryAndStation("홍대 한식 제육", "상수역");
 		assertThat(found).isNotEmpty();
 		assertThat(found.get(0).getName()).isEqualTo("홍대 제육맛집");
 	}

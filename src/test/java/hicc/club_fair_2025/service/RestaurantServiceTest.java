@@ -55,9 +55,9 @@ class RestaurantServiceTest {
 		Restaurant mockRestaurant = new Restaurant("홍대 제육맛집", "한식", "서울 어딘가");
 		mockRestaurant.setSearchQuery("홍대 한식 제육");
 		List<Restaurant> list = List.of(mockRestaurant);
-		given(restaurantRepository.findBySearchQuery("홍대 한식 제육")).willReturn(list);
+		given(restaurantRepository.findBySearchQueryAndStation("홍대 한식 제육", "상수역")).willReturn(list);
 
-		List<Restaurant> result = restaurantService.findBySearchQuery("홍대 한식 제육");
+		List<Restaurant> result = restaurantService.findBySearchQueryAndStation("홍대 한식 제육", "상수역");
 
 		assertThat(result).isNotEmpty();
 		assertThat(result.get(0).getName()).isEqualTo("홍대 제육맛집");
@@ -66,9 +66,9 @@ class RestaurantServiceTest {
 	@DisplayName("findBySearchQuery() - 없는 검색어일 경우 빈 리스트 반환")
 	@Test
 	void findBySearchQuery_NotFound() {
-		given(restaurantRepository.findBySearchQuery("없는 쿼리")).willReturn(Collections.emptyList());
+		given(restaurantRepository.findBySearchQueryAndStation("없는 쿼리", "홍대입구역")).willReturn(Collections.emptyList());
 
-		List<Restaurant> result = restaurantService.findBySearchQuery("없는 쿼리");
+		List<Restaurant> result = restaurantService.findBySearchQueryAndStation("없는 쿼리", "홍대입구역");
 
 		assertThat(result).isEmpty();
 	}
@@ -103,7 +103,7 @@ class RestaurantServiceTest {
 				when(mock.exchange(any(RequestEntity.class), eq(String.class)))
 					.thenReturn(fakeResponseEntity);
 			})) {
-			restaurantService.saveOneRestaurantPerSearchQuery();
+			restaurantService.saveRestaurantPerSearchQuery(1);
 		}
 
 		then(restaurantRepository).should(atLeastOnce()).saveAll(anyList());
