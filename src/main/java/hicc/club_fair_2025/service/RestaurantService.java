@@ -42,8 +42,8 @@ public class RestaurantService {
         this.objectMapper = new ObjectMapper();
     }
 
-    public List<Restaurant> findBySearchQuery(String query) {
-        return restaurantRepository.findBySearchQuery(query);
+    public List<Restaurant> findBySearchQueryAndStation(String query, String station) {
+        return restaurantRepository.findBySearchQueryAndStation(query, station);
     }
 
     public void saveRestaurantPerSearchQuery(int displayCount) {

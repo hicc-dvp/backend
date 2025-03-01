@@ -18,16 +18,19 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private String introduction;
 
 	@Column(nullable = false, unique = true)
 	private String instagramId;
 
-	private String station;
-	private String searchQuery;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "restaurant_id")
+	private Restaurant restaurant;
 
-	public User(String instagramId, String station, String searchQuery) {
+	public User(String instagramId, String introduction, Restaurant restaurant) {
 		this.instagramId = instagramId;
-		this.station = station;
-		this.searchQuery = searchQuery;
+		this.introduction = introduction;
+		this.restaurant = restaurant;
+
 	}
 }

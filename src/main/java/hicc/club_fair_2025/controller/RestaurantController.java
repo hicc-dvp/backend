@@ -39,12 +39,12 @@ public class RestaurantController {
         }
     }
 
-    @Operation(summary = "검색어 ID로 식당 조회", description = "SearchQuery의 PK를 통해 해당 식당 정보를 조회합니다.")
+    @Operation(summary = "검색어 ID와 지하철역으로 식당 조회", description = "SearchQuery의 PK와 Station의 이름을 통해 해당 식당 정보를 조회합니다.search-queries/{queryId}/restaurant?station=홍대입구역 ")
     @GetMapping("/search-queries/{queryId}/restaurant")
-    public List<Restaurant> getRestaurantByQueryId(@PathVariable Long queryId) {
+    public List<Restaurant> getRestaurantByQueryIdAndStation(@PathVariable Long queryId, @RequestParam String station) {
         SearchQuery sq = searchQueryRepository.findById(queryId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.BAD_REQUEST, "잘못된 queryId: " + queryId));
-        return restaurantService.findBySearchQuery(sq.getQuery());
+        return restaurantService.findBySearchQueryAndStation(sq.getQuery(), station);
     }
 }

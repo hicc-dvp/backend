@@ -40,20 +40,20 @@ class RestaurantControllerTest {
 			.build();
 	}
 
-	@DisplayName("POST /restaurants/saveOne - 네이버 API 데이터 저장 (정상)")
+	@DisplayName("POST /restaurants/save - 네이버 API 데이터 저장 (정상)")
 	@Test
 	void saveOneRestaurantPerSearchQuery_Success() throws Exception {
-		doNothing().when(restaurantService).saveOneRestaurantPerSearchQuery();
-		mockMvc.perform(post("/restaurants/saveOne"))
+		doNothing().when(restaurantService).saveRestaurantPerSearchQuery(1);
+		mockMvc.perform(post("/restaurants/save"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("저장 완료"));
 	}
 
-	@DisplayName("POST /restaurants/saveOne - 네이버 API 데이터 저장 (실패)")
+	@DisplayName("POST /restaurants/save - 네이버 API 데이터 저장 (실패)")
 	@Test
 	void saveOneRestaurantPerSearchQuery_Failure() throws Exception {
-		doThrow(new RuntimeException("API 호출 오류")).when(restaurantService).saveOneRestaurantPerSearchQuery();
-		mockMvc.perform(post("/restaurants/saveOne"))
+		doThrow(new RuntimeException("API 호출 오류")).when(restaurantService).saveRestaurantPerSearchQuery(1);
+		mockMvc.perform(post("/restaurants/save"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("저장 실패: API 호출 오류"));
 	}
@@ -68,10 +68,10 @@ class RestaurantControllerTest {
 		Restaurant rest = new Restaurant("홍대 제육맛집", "한식", "서울시 어딘가");
 		rest.setSearchQuery("홍대 한식 제육");
 		List<Restaurant> restList = List.of(rest);
-		given(restaurantService.findBySearchQuery("홍대 한식 제육"))
+		given(restaurantService.findBySearchQueryAndStation("홍대 한식 제육", "상수역"))
 			.willReturn(restList);
 
-		mockMvc.perform(get("/restaurants/search-queries/100/restaurant"))
+		mockMvc.perform(get("/restaurants/search-queries/100/restaurant?station=상수역"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].name").value("홍대 제육맛집"))
 			.andExpect(jsonPath("$[0].category").value("한식"));
