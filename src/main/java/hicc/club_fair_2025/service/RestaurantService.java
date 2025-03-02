@@ -56,8 +56,9 @@ public class RestaurantService {
             Map<String, Restaurant> candidateMap = new LinkedHashMap<>();
             for (String stationPrefix : stationPrefixes) {
                 try {
+                    String queryString = (sq.getQuery() != null) ? sq.getQuery() : "";
                     String categoryName = (sq.getCategory() != null) ? sq.getCategory().getName() : "";
-                    String finalQuery = stationPrefix + " " + categoryName + " " + sq.getQuery();
+                    String finalQuery = stationPrefix + " " + categoryName + " " + queryString;
                     System.out.println("Query: " + finalQuery);
 
                     URI uri = UriComponentsBuilder.fromUriString("https://openapi.naver.com")
@@ -140,9 +141,9 @@ public class RestaurantService {
             // 각 후보에 대해 두 역과의 거리 비교 후 station 값 업데이트
             for (Restaurant candidate : candidateMap.values()) {
                 Station station1 = stationRepository.findByName("홍대입구역")
-                    .orElseGet(() -> new Station("홍대입구역", 1269240000, 375550000, "홍대입구역"));
+                    .orElseGet(() -> new Station("홍대입구역", 1269240192, 375570155, "홍대입구역"));
                 Station station2 = stationRepository.findByName("상수역")
-                    .orElseGet(() -> new Station("상수역", 1269180000, 375480000, "상수역"));
+                    .orElseGet(() -> new Station("상수역", 1269223053, 375477659, "상수역"));
 
                 double distance1 = calculateDistance((long) candidate.getMapx(), (long) candidate.getMapy(),
                     station1.getMapx(), station1.getMapy());
