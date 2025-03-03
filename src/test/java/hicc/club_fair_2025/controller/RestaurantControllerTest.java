@@ -2,7 +2,9 @@ package hicc.club_fair_2025.controller;
 
 import hicc.club_fair_2025.entity.Restaurant;
 import hicc.club_fair_2025.entity.SearchQuery;
+import hicc.club_fair_2025.repository.CategoryRepository;
 import hicc.club_fair_2025.repository.SearchQueryRepository;
+import hicc.club_fair_2025.service.CategoryService;
 import hicc.club_fair_2025.service.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,12 +30,16 @@ class RestaurantControllerTest {
 	private RestaurantService restaurantService;
 	private SearchQueryRepository searchQueryRepository;
 	private RestaurantController restaurantController;
+	private CategoryService categoryService;
 
 	@BeforeEach
 	void setUp() {
 		restaurantService = Mockito.mock(RestaurantService.class);
 		searchQueryRepository = Mockito.mock(SearchQueryRepository.class);
-		restaurantController = new RestaurantController(restaurantService, searchQueryRepository);
+		categoryService = Mockito.mock(CategoryService.class);
+
+		searchQueryRepository = Mockito.mock(SearchQueryRepository.class);
+		restaurantController = new RestaurantController(restaurantService, searchQueryRepository, categoryService);
 		mockMvc = MockMvcBuilders.standaloneSetup(restaurantController)
 			.addFilters(new CharacterEncodingFilter("UTF-8", true))
 			.defaultResponseCharacterEncoding(StandardCharsets.UTF_8)

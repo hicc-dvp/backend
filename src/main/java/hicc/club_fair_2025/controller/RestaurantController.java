@@ -1,10 +1,14 @@
 package hicc.club_fair_2025.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import hicc.club_fair_2025.entity.Category;
 import hicc.club_fair_2025.entity.Restaurant;
 import hicc.club_fair_2025.entity.SearchQuery;
+import hicc.club_fair_2025.repository.CategoryRepository;
 import hicc.club_fair_2025.repository.SearchQueryRepository;
+import hicc.club_fair_2025.service.CategoryService;
 import hicc.club_fair_2025.service.RestaurantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,11 +23,13 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final SearchQueryRepository searchQueryRepository;
+    private final CategoryService categoryService;
 
     public RestaurantController(RestaurantService restaurantService,
-        SearchQueryRepository searchQueryRepository) {
+        SearchQueryRepository searchQueryRepository, CategoryService categoryService) {
         this.restaurantService = restaurantService;
         this.searchQueryRepository = searchQueryRepository;
+        this.categoryService = categoryService;
     }
 
     @Operation(summary = "네이버 API 데이터 저장", description = "각 SearchQuery마다 네이버 API를 호출하여 첫 번째 식당 정보를 저장합니다.")
@@ -47,4 +53,20 @@ public class RestaurantController {
                 HttpStatus.BAD_REQUEST, "잘못된 queryId: " + queryId));
         return restaurantService.findBySearchQueryAndStation(sq.getQuery(), station);
     }
+
+    @Operation(summary = "카테고리 ID와 지하철역으로 식당 조회", description = "Category의 PK와 Station의 이름을 통해 해당 식당 정보를 조회합니다.")
+    @GetMapping("/categories/{categoryId}/restaurant")
+    public List<Restaurant> getRestaurantByCategoryIdAndStation(@PathVariable Long categoryId, @RequestParam String station) {
+
+        List<SearchQuery> queries = categoryService.findSearchQueriesByCategoryId(categoryId);
+        List<Restaurant> allRestaurants = new ArrayList<>();
+
+        for (SearchQuery query : queries) {
+            List<Restaurant> restaurants = restaurantService.findBySearchQueryAndStation(query.getQuery(), station);
+            allRestaurants.addAll(restaurants); // 리스트에 결과 추가
+        }
+
+        return allRestaurants;
+    }
+
 }
