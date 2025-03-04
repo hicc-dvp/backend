@@ -23,7 +23,10 @@ jobs:
     - name: Build without tests
       run: |
         set -x  # Enable debug mode
-        ./gradlew clean assemble || { echo "Gradle build failed"; exit 1; }
+        chmod +x gradlew
+        ./gradlew clean assemble --no-daemon || { echo "Gradle build failed"; exit 1; }
+        echo "Checking build/libs directory..."
+        ls -la build/libs/
 
     - name: Check JAR file existence
       run: |
