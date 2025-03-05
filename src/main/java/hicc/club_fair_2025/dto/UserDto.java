@@ -10,12 +10,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserDto {
     private String instagramId;
-    private Long searchQueryId;
     private String introduction;
+    private Long restaurantId;
 
     public UserDto(User user) {
         this.instagramId = user.getInstagramId();
-        this.searchQueryId = user.getSearchQuery().getId();  // restaurant 객체 대신 ID만 전달
         this.introduction = user.getIntroduction();
+        this.restaurantId = user.getRestaurant().getId();
     }
 }

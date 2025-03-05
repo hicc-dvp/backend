@@ -24,13 +24,13 @@ public class User {
 	private String instagramId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "searchQuery_id")
-	private SearchQuery searchQuery;
+	@JoinColumn(name = "restaurant_id")
+	private Restaurant restaurant;
 
-	public User(String instagramId, String introduction, SearchQuery searchQuery) {
+	public User(String instagramId, String introduction, Restaurant restaurant) {
 		this.instagramId = instagramId;
 		this.introduction = introduction;
-		this.searchQuery = searchQuery;
+		this.restaurant = restaurant;
 
 	}
 }
