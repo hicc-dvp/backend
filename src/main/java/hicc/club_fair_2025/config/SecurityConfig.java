@@ -1,6 +1,5 @@
 package hicc.club_fair_2025.config;
 
-import org.apache.catalina.filters.CorsFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +8,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -44,8 +44,8 @@ public class SecurityConfig {
 	 * CORS 필터가 Spring Security보다 먼저 실행되도록 설정
 	 */
 	@Bean
-	public FilterRegistrationBean<CorsFilter> corsFilter() {
-		FilterRegistrationBean<CorsFilter> filterBean = new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
+	public FilterRegistrationBean<org.springframework.web.filter.CorsFilter> corsFilter() {
+		FilterRegistrationBean<org.springframework.web.filter.CorsFilter> filterBean = new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
 		filterBean.setOrder(0); // 가장 먼저 실행되도록 설정
 		return filterBean;
 	}
