@@ -37,4 +37,14 @@ public class SecurityConfig {
 	    source.registerCorsConfiguration("/**", configuration);
 	    return source;
 	}
+
+	/**
+	* CORS 필터가 Spring Security보다 먼저 실행되도록 설정
+	*/
+	@Bean
+	public FilterRegistrationBean<CorsFilter> corsFilter() {
+		FilterRegistrationBean<CorsFilter> filterBean = new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
+		filterBean.setOrder(0); // 가장 먼저 실행되도록 설정
+	        return filterBean;
+	}
 }
