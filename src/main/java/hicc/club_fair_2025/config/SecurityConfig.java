@@ -1,5 +1,7 @@
 package hicc.club_fair_2025.config;
 
+import org.apache.catalina.filters.CorsFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,24 +29,24 @@ public class SecurityConfig {
 	// CORS 설정: 특정 오리진 및 메서드, 헤더 허용
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-	    CorsConfiguration configuration = new CorsConfiguration();
-	    configuration.setAllowedOrigins(List.of("https://hicc.space", "https://api.hicc.space", "http://localhost:5173"));
-	    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-	    configuration.setAllowedHeaders(List.of("*"));
-	    configuration.setAllowCredentials(true);
-	
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", configuration);
-	    return source;
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("https://hicc.space", "https://api.hicc.space", "http://localhost:5173"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 
 	/**
-	* CORS 필터가 Spring Security보다 먼저 실행되도록 설정
-	*/
+	 * CORS 필터가 Spring Security보다 먼저 실행되도록 설정
+	 */
 	@Bean
 	public FilterRegistrationBean<CorsFilter> corsFilter() {
 		FilterRegistrationBean<CorsFilter> filterBean = new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
 		filterBean.setOrder(0); // 가장 먼저 실행되도록 설정
-	        return filterBean;
+		return filterBean;
 	}
 }
