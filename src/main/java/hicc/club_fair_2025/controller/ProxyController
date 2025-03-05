@@ -18,7 +18,10 @@ public class ProxyController {
     }
 
     @GetMapping("/map")
-    public ResponseEntity<String> getNaverMap(@RequestParam String name) {
+    public ResponseEntity<String> getNaverMap(
+            @RequestParam(name = "name", required = false, defaultValue = "서울역") String name) {
+
+        // URL 인코딩
         String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
         String url = "https://map.naver.com/v5/search/" + encodedName;
 
@@ -38,7 +41,7 @@ public class ProxyController {
                     String.class
             );
 
-            // 응답 헤더 수정
+            // 응답 헤더 설정
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.add("X-Frame-Options", "ALLOW-FROM https://hicc.space");
             responseHeaders.add("Content-Security-Policy", "frame-ancestors 'self' https://hicc.space");
