@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	List<User> findByRestaurant_Id(Long id);
+	List<User> findBySearchQuery_Id(Long id);
 }
