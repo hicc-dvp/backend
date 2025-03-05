@@ -7,33 +7,50 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * 네이버 지도 검색 요청을 프록시하는 컨트롤러
+ * - 네이버 지도 검색 URL을 호출하여 프론트엔드에서 직접 접근할 수 있도록 지원
+ */
 @RestController
 @RequestMapping("/naver")
 public class ProxyController {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * 기본 생성자 - RestTemplate 객체 초기화
+     */
     public ProxyController() {
         this.restTemplate = new RestTemplate();
     }
 
+    /**
+     * 네이버 지도 검색 프록시 API
+     *
+     * @param name 검색할 장소명 (한글 지원)
+     * @return 네이버 지도 검색 결과
+     */
     @GetMapping("/map")
     public ResponseEntity<String> getNaverMap(
             @RequestParam(name = "name", required = false, defaultValue = "서울역") String name) {
 
-        // URL 인코딩
+        // 🔹 URL 인코딩 (한글, 공백 등 처리)
         String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+
+        // 🔹 네이버 지도 검색 URL
         String url = "https://map.naver.com/v5/search/" + encodedName;
 
+        // 🔹 네이버 API 요청을 위한 HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36");
-        headers.set("Referer", "https://map.naver.com");
+        headers.set("Referer", "https://map.naver.com"); // 네이버 지도에서 요청한 것처럼 보이게 설정
         headers.set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         headers.set("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7");
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
+            // 🔹 네이버 지도 API 호출
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
@@ -41,17 +58,19 @@ public class ProxyController {
                     String.class
             );
 
-            // 응답 헤더 설정
+            // 🔹 응답 헤더 설정 (iframe 사용 허용)
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.add("X-Frame-Options", "ALLOW-FROM https://hicc.space");
             responseHeaders.add("Content-Security-Policy", "frame-ancestors 'self' https://hicc.space");
 
+            // 🔹 네이버 응답을 클라이언트에게 전달
             return ResponseEntity
                     .status(response.getStatusCode())
                     .headers(responseHeaders)
                     .body(response.getBody());
 
         } catch (Exception e) {
+            // 🔹 API 호출 실패 시 에러 메시지 반환
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("네이버 지도를 불러오는데 실패했습니다.");
         }
